@@ -22,6 +22,7 @@ import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import java.net.URL;
@@ -31,6 +32,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.util.concurrent.ExecutionException;
+
 import android.os.Handler;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -79,7 +82,7 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
     private ArrayList<String> mDatasetStrings = new ArrayList<String>();
     private Bitmap bitmapImg;
     private Bitmap bmFromURL;
-    private int[]  myNewTexture;
+    private int[]  myIntArrTexture;
     //private ImageView imageview;
 
     // Our OpenGL view:
@@ -134,13 +137,28 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
         
         // Load any sample specific textures:
         mTextures = new Vector<Texture>();
+
+        try {
+            bmFromURL = new DownloadImageTask().execute("http://www.uni-weimar.de/uploads/pics/hagen_web.jpg").get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        myIntArrTexture = BmToIntArr (bmFromURL);
+        if (myIntArrTexture == null){
+            Log.e("Int Arr", "null");
+        }
+
         loadTextures();
         
         mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
-            "droid");
+                "droid");
         //
-     //  bmFromURL = GetImageFromURL ("http://www.uni-weimar.de/uploads/pics/hagen_web.jpg");
-       // myNewTexture[0] = loadBitmapTexture(bmFromURL);
+       //bmFromURL = GetImageFromURL ("http://www.uni-weimar.de/uploads/pics/hagen_web.jpg");
+
+
+        // myNewTexture[0] = loadBitmapTexture(bmFromURL);
     }
     
     // Process Single Tap event to trigger autofocus
@@ -188,92 +206,51 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
 
         mTextures.add(Texture.loadTextureFromApk("TextureTeapotBrass.png",
             getAssets()));
-        //mTextures.add(Texture.loadTextureFromIntBuffer(myNewTexture,500,250));
+        System.out.println(myIntArrTexture.toString());
+        System.out.println((bmFromURL.getWidth()));
+        System.out.println((bmFromURL.getHeight()));
+        mTextures.add(Texture.loadTextureFromIntBuffer(myIntArrTexture, bmFromURL.getWidth(), bmFromURL.getHeight()));
         mTextures.add(Texture.loadTextureFromApk("TextureTeapotBlue.png",
             getAssets()));
         mTextures.add(Texture.loadTextureFromApk("TextureTeapotRed.png",
             getAssets()));
         mTextures.add(Texture.loadTextureFromApk("ImageTargets/Buildings.jpeg",
             getAssets()));
-    }
-    //Source: http://www.learnopengles.com/android-lesson-four-introducing-basic-texturing/
-    private static int loadBitmapTexture (Bitmap textureImage) {
-        final int[] textureHandle = new int[1];
 
-        GLES20.glGenTextures(1, textureHandle, 0);
-
-        if (textureHandle[0] != 0)
-        {
-           // final BitmapFactory.Options options = new BitmapFactory.Options();
-           // options.inScaled = false;   // No pre-scaling
-
-            // Read in the resource
-          //  final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
-
-            // Bind to the texture in OpenGL
-            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
-
-            // Set filtering
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-
-            // Load the bitmap into the bound texture.
-            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, textureImage, 0);
-
-            // Recycle the bitmap, since its data has been loaded into OpenGL.
-            textureImage.recycle();
-        }
-
-        if (textureHandle[0] == 0)
-        {
-            throw new RuntimeException("Error loading texture.");
-        }
-
-        return textureHandle[0];
     }
 
-    //Source: http://stackoverflow.com/questions/5776851/load-image-from-url
-        private Bitmap GetImageFromURL (String fileURL){
 
-        URL myfileURL =null;
-        try
-        {
-            myfileURL= new URL(fileURL);
+    //Sources: http://stackoverflow.com/questions/5776851/load-image-from-url
+    //http://www.41post.com/4396/programming/android-bitmap-to-integer-array
+        private int[] BmToIntArr (Bitmap bitmapImg){
 
-        }
-        catch (MalformedURLException e)
-        {
-
-            e.printStackTrace();
-        }
-
-        try
-        {
-            HttpURLConnection conn= (HttpURLConnection)myfileURL.openConnection();
-            conn.setDoInput(true);
-            conn.connect();
-            int length = conn.getContentLength();
-           int[] bitmapData =new int[length];
-         //   byte[] bitmapData2 =new byte[length];
-            InputStream is = conn.getInputStream();
-            BitmapFactory.Options options = new BitmapFactory.Options();
-
-            bitmapImg = BitmapFactory.decodeStream(is,null,options);
-
-           // img.setImageBitmap(bitmapImg);
-
-            //dialog.dismiss();
-
-        }
-        catch(IOException e)
-        {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-//          Toast.makeText(PhotoRating.this, "Connection Problem. Try Again.", Toast.LENGTH_SHORT).show();
-        }
-        return bitmapImg;
+            int[] IntArrTexture= new int[bitmapImg.getWidth()*bitmapImg.getHeight()];
+            bitmapImg.getPixels( IntArrTexture, 0, bitmapImg.getWidth(), 0, 0, bitmapImg.getWidth(), bitmapImg.getHeight());
+            return IntArrTexture;
     }
 
+    //Source: http://stackoverflow.com/questions/2471935/how-to-load-an-imageview-by-url-in-android
+    //http://developer.android.com/reference/android/os/AsyncTask.html
+    private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
+
+        protected Bitmap doInBackground(String... urls) {
+            String urldisplay = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+
+                InputStream in = new java.net.URL(urldisplay).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+                if (mIcon11==null) {Log.e("bitmap error" , "null");};
+                return mIcon11;
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+
+
+    }
 
     // Called when the activity will start interacting with the user.
     @Override
@@ -303,7 +280,7 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
             mGlView.setVisibility(View.VISIBLE);
             mGlView.onResume();
         }
-        
+
     }
     
     
