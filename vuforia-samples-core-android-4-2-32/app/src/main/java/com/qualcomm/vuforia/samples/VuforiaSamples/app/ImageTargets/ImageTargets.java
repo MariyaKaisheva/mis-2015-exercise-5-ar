@@ -7,6 +7,8 @@ and other countries. Trademarks of QUALCOMM Incorporated are used with permissio
 
 package com.qualcomm.vuforia.samples.VuforiaSamples.app.ImageTargets;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -18,8 +20,17 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.opengl.GLES20;
+import android.opengl.GLUtils;
 import android.os.Build;
 import android.os.Bundle;
+import java.net.URL;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import android.os.Handler;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -28,6 +39,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -65,7 +77,11 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
     private int mStartDatasetsIndex = 0;
     private int mDatasetsNumber = 0;
     private ArrayList<String> mDatasetStrings = new ArrayList<String>();
-    
+    private Bitmap bitmapImg;
+    private Bitmap bmFromURL;
+    private int[]  myNewTexture;
+    //private ImageView imageview;
+
     // Our OpenGL view:
     private SampleApplicationGLView mGlView;
     
@@ -122,7 +138,9 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
         
         mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
             "droid");
-        
+        //
+     //  bmFromURL = GetImageFromURL ("http://www.uni-weimar.de/uploads/pics/hagen_web.jpg");
+       // myNewTexture[0] = loadBitmapTexture(bmFromURL);
     }
     
     // Process Single Tap event to trigger autofocus
@@ -167,8 +185,10 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
     
     private void loadTextures()
     {
+
         mTextures.add(Texture.loadTextureFromApk("TextureTeapotBrass.png",
             getAssets()));
+        //mTextures.add(Texture.loadTextureFromIntBuffer(myNewTexture,500,250));
         mTextures.add(Texture.loadTextureFromApk("TextureTeapotBlue.png",
             getAssets()));
         mTextures.add(Texture.loadTextureFromApk("TextureTeapotRed.png",
@@ -176,8 +196,85 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
         mTextures.add(Texture.loadTextureFromApk("ImageTargets/Buildings.jpeg",
             getAssets()));
     }
-    
-    
+    //Source: http://www.learnopengles.com/android-lesson-four-introducing-basic-texturing/
+    private static int loadBitmapTexture (Bitmap textureImage) {
+        final int[] textureHandle = new int[1];
+
+        GLES20.glGenTextures(1, textureHandle, 0);
+
+        if (textureHandle[0] != 0)
+        {
+           // final BitmapFactory.Options options = new BitmapFactory.Options();
+           // options.inScaled = false;   // No pre-scaling
+
+            // Read in the resource
+          //  final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
+
+            // Bind to the texture in OpenGL
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+
+            // Set filtering
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+            // Load the bitmap into the bound texture.
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, textureImage, 0);
+
+            // Recycle the bitmap, since its data has been loaded into OpenGL.
+            textureImage.recycle();
+        }
+
+        if (textureHandle[0] == 0)
+        {
+            throw new RuntimeException("Error loading texture.");
+        }
+
+        return textureHandle[0];
+    }
+
+    //Source: http://stackoverflow.com/questions/5776851/load-image-from-url
+        private Bitmap GetImageFromURL (String fileURL){
+
+        URL myfileURL =null;
+        try
+        {
+            myfileURL= new URL(fileURL);
+
+        }
+        catch (MalformedURLException e)
+        {
+
+            e.printStackTrace();
+        }
+
+        try
+        {
+            HttpURLConnection conn= (HttpURLConnection)myfileURL.openConnection();
+            conn.setDoInput(true);
+            conn.connect();
+            int length = conn.getContentLength();
+           int[] bitmapData =new int[length];
+         //   byte[] bitmapData2 =new byte[length];
+            InputStream is = conn.getInputStream();
+            BitmapFactory.Options options = new BitmapFactory.Options();
+
+            bitmapImg = BitmapFactory.decodeStream(is,null,options);
+
+           // img.setImageBitmap(bitmapImg);
+
+            //dialog.dismiss();
+
+        }
+        catch(IOException e)
+        {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+//          Toast.makeText(PhotoRating.this, "Connection Problem. Try Again.", Toast.LENGTH_SHORT).show();
+        }
+        return bitmapImg;
+    }
+
+
     // Called when the activity will start interacting with the user.
     @Override
     protected void onResume()
