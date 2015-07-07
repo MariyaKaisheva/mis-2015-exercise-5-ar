@@ -228,7 +228,7 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
         int width = bmFromURL.getWidth();
         int height = bmFromURL.getWidth();
 
-        mTextures.add(Texture.loadTextureFromApk("TextureTeapotBrass.png",
+        mTextures.add(Texture.loadTextureFromApk("TextureTeapotGreen.png",
                 getAssets()));
         mTextures.add(Texture.loadTextureFromApk("TextureTeapotBlue.png",
                 getAssets()));
