@@ -10,29 +10,6 @@ public class PlaneObject extends  MeshObject{
 
     private static final double PlaneVertices[] ={
 
-            /*-1.00f, -1.00f, 1.00f, // front face of a cube
-            1.00f, -1.00f, 1.00f,
-            1.00f, 1.00f, 1.00f,
-            -1.00f, 1.00f, 1.00f,*//*
-                              -0.5, -0.5, 1,
-                                0.0, 0.5, 1,
-                              -0.5, 0.0, 1,
-                                0.5, 0.5, 1,
-                              0.0, -0.5,1,
-                                0.5, 0.0, 1,*/
-            /*-5, -5, 0,
-            0.0, 5, 0,
-            -5, 0.0, 0,
-            5, 5, 0,
-            0.0, -5,0,
-            5, 0.0, 0*//*
-            -5, -5, 1,
-            5, 5, 1,
-            -5, 5, 1,
-            -5, -5, 1,
-            5, 5, 1,
-            5, -5, 1*/
-
             -15, -15, 1,
             15, -15, 1,
             15, 15, 1,
@@ -40,7 +17,7 @@ public class PlaneObject extends  MeshObject{
             -15, -15, 1,
             15, 15, 1};
 
-    private static final double PlaneTexcoords[] = {0, 0, 1, 0, 1,1, 0, 1, 0, 0, 1, 1};//{0, 0, 1, 0, 1,1, 0, 1};
+    private static final double PlaneTexcoords[] = {0, 0, 1, 0, 1,1, 0, 1, 0, 0, 1, 1};
 
     private static final double PlaneNormals[] ={ 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
 

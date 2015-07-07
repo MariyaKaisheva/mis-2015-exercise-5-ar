@@ -101,10 +101,15 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
     private int mStartDatasetsIndex = 0;
     private int mDatasetsNumber = 0;
     private ArrayList<String> mDatasetStrings = new ArrayList<String>();
-    private Bitmap bitmapImg;
     private Bitmap bmFromURL;
-    private int[]  myIntArrTexture;
-    //private ImageView imageview;
+    //private int[]  myIntArrTexture;
+
+    private int[][]  texturesArray = new int[5][];
+    private String[] picUrl = {"http://www.uni-weimar.de/uploads/pics/schatter_web.jpg",
+                                "http://www.uni-weimar.de/uploads/pics/rodehorst_web.jpg",
+                                "http://www.uni-weimar.de/uploads/pics/hornecker_web.jpg",
+                                "http://www.uni-weimar.de/uploads/pics/jakoby_web.jpg",
+                                "http://www.uni-weimar.de/uploads/pics/echtler_web.jpg"};
 
     // Our OpenGL view:
     private SampleApplicationGLView mGlView;
@@ -147,8 +152,6 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
         vuforiaAppSession = new SampleApplicationSession(this);
         
         startLoadingAnimation();
-       // mDatasetStrings.add("StonesAndChips.xml");
-       // mDatasetStrings.add("Tarmac.xml");
         mDatasetStrings.add("AugmentedReality.xml");
         
         vuforiaAppSession
@@ -160,26 +163,24 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
         mTextures = new Vector<Texture>();
 
         try {
-            bmFromURL = new DownloadImageTask().execute("http://www.uni-weimar.de/uploads/pics/hagen_web.jpg").get();
+            // Obtain bitmaps from all urls
+            for (int i = 0; i < picUrl.length; i++) {
+                bmFromURL = new DownloadImageTask().execute(picUrl[i]).get();
+                texturesArray[i] = BmToIntArr (bmFromURL);
+            }
+            //bmFromURL = new DownloadImageTask().execute("http://www.uni-weimar.de/uploads/pics/hagen_web.jpg").get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-        myIntArrTexture = BmToIntArr (bmFromURL);
-        if (myIntArrTexture == null){
-            Log.e("Int Arr", "null");
-        }
 
+        // load the corresponding texture according to the recognized sign
         loadTextures();
         
         mIsDroidDevice = android.os.Build.MODEL.toLowerCase().startsWith(
                 "droid");
-        //
-       //bmFromURL = GetImageFromURL ("http://www.uni-weimar.de/uploads/pics/hagen_web.jpg");
 
-
-        // myNewTexture[0] = loadBitmapTexture(bmFromURL);
     }
     
     // Process Single Tap event to trigger autofocus
@@ -224,19 +225,21 @@ public class ImageTargets extends Activity implements SampleApplicationControl,
     
     private void loadTextures()
     {
+        int width = bmFromURL.getWidth();
+        int height = bmFromURL.getWidth();
 
         mTextures.add(Texture.loadTextureFromApk("TextureTeapotBrass.png",
-            getAssets()));
-        System.out.println(myIntArrTexture.toString());
-        System.out.println((bmFromURL.getWidth()));
-        System.out.println((bmFromURL.getHeight()));
-        mTextures.add(Texture.loadTextureFromIntBuffer(myIntArrTexture, bmFromURL.getWidth(), bmFromURL.getHeight()));
+                getAssets()));
         mTextures.add(Texture.loadTextureFromApk("TextureTeapotBlue.png",
-            getAssets()));
+                getAssets()));
         mTextures.add(Texture.loadTextureFromApk("TextureTeapotRed.png",
-            getAssets()));
-        mTextures.add(Texture.loadTextureFromApk("ImageTargets/Buildings.jpeg",
-            getAssets()));
+                getAssets()));
+        //mTextures.add(Texture.loadTextureFromIntBuffer(myIntArrTexture, bmFromURL.getWidth(), bmFromURL.getHeight()));
+
+        // Loading textures from the professors pictures
+        for (int i = 0; i < picUrl.length; i++) {
+            mTextures.add(Texture.loadTextureFromIntBuffer(texturesArray[i], width, height));
+        }
 
     }
 

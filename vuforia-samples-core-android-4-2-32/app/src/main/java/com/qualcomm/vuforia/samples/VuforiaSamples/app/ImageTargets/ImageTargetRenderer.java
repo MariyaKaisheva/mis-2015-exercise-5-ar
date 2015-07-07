@@ -60,10 +60,11 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
     private int texSampler2DHandle;
     
     private Teapot mTeapot;
-    //private PlaneObject mPlane;
+
     private PlaneObject mPlane;
     
-    private float kBuildingScale = 25.0f; //change name to Plane scale
+    private float kBuildingScale = 25.0f;
+
     private SampleApplication3DModel mBuildingsModel;
     
     private Renderer mRenderer;
@@ -192,8 +193,7 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
             GLES20.glFrontFace(GLES20.GL_CW); // Front camera
         else
             GLES20.glFrontFace(GLES20.GL_CCW); // Back camera
-            
-        // did we find any trackables this frame?
+
         for (int tIdx = 0; tIdx < state.getNumTrackableResults(); tIdx++)
         {
             int textureIndex = 0;
@@ -209,20 +209,28 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
             else if (trackable.getName().equalsIgnoreCase("cat")){
                 textureIndex = 1;
             }
-
             else if (trackable.getName().equalsIgnoreCase("tree")){
                 textureIndex = 2;
             }
-            else {
+            else if (trackable.getName().equalsIgnoreCase("Prof_Schatter")) {
                 textureIndex = 3;
+            }
+            else if (trackable.getName().equalsIgnoreCase("Prof_Rodehorst")) {
+                textureIndex = 4;
+            }
+            else if (trackable.getName().equalsIgnoreCase("Prof_Hornecker")) {
+                textureIndex = 5;
+            }
+            else if (trackable.getName().equalsIgnoreCase("Prof_Jakoby")) {
+                textureIndex = 6;
+            }
+            else if (trackable.getName().equalsIgnoreCase("Prof_Echtler")) {
+                textureIndex = 7;
+            }
+            else {
+                textureIndex = 8;
              }
-          //  int textureIndex = trackable.getName().equalsIgnoreCase("city") ? 0
-          //      :1;
-           // textureIndex = trackable.getName().equalsIgnoreCase("cat") ? 1
-           //     : 2;
 
-          //  textureIndex = trackable.getName().equalsIgnoreCase("tree") ? 0
-            //        : 3;
             // deal with the modelview and projection matrices
             float[] modelViewProjection = new float[16];
             
