@@ -9,6 +9,7 @@ package com.qualcomm.vuforia.samples.VuforiaSamples.app.ImageTargets;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Vector;
 
@@ -66,8 +67,28 @@ import com.qualcomm.vuforia.samples.VuforiaSamples.R;
 import com.qualcomm.vuforia.samples.VuforiaSamples.ui.SampleAppMenu.SampleAppMenu;
 import com.qualcomm.vuforia.samples.VuforiaSamples.ui.SampleAppMenu.SampleAppMenuGroup;
 import com.qualcomm.vuforia.samples.VuforiaSamples.ui.SampleAppMenu.SampleAppMenuInterface;
+import com.qualcomm.vuforia.samples.SampleApplication.utils.MeshObject;
 
+ class Plane extends MeshObject {
+     private static final double letterVertices[] ={-0.5, -0.5, 0.0, 0.5, -0.5, 0.0, 0.5, 0.5, 0.0, -0.5, 0.5, 0.0,};
+     private static final double letterNormals[] ={0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0};
+     private static final double letterTexcoords[] ={0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0};
+     private static final double letterIndices[] ={0, 1, 2, 0, 2, 3};
+    @Override
+    public Buffer getBuffer(BUFFER_TYPE bufferType) {
+        return null;
+    }
 
+    @Override
+    public int getNumObjectVertex() {
+        return 0;
+    }
+
+    @Override
+    public int getNumObjectIndex() {
+        return 0;
+    }
+};
 public class ImageTargets extends Activity implements SampleApplicationControl,
     SampleAppMenuInterface
 {

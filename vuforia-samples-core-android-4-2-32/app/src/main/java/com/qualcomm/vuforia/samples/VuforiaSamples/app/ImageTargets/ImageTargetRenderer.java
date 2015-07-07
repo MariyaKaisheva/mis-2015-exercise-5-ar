@@ -32,6 +32,8 @@ import com.qualcomm.vuforia.samples.SampleApplication.utils.LoadingDialogHandler
 import com.qualcomm.vuforia.samples.SampleApplication.utils.SampleApplication3DModel;
 import com.qualcomm.vuforia.samples.SampleApplication.utils.SampleUtils;
 import com.qualcomm.vuforia.samples.SampleApplication.utils.Teapot;
+import com.qualcomm.vuforia.samples.SampleApplication.utils.PlaneObject;
+import com.qualcomm.vuforia.samples.SampleApplication.utils.CubeObject;
 import com.qualcomm.vuforia.samples.SampleApplication.utils.Texture;
 
 
@@ -58,6 +60,8 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
     private int texSampler2DHandle;
     
     private Teapot mTeapot;
+    //private PlaneObject mPlane;
+    private CubeObject mPlane;
     
     private float kBuildingScale = 12.0f;
     private SampleApplication3DModel mBuildingsModel;
@@ -118,6 +122,7 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
     private void initRendering()
     {
         mTeapot = new Teapot();
+        mPlane = new CubeObject();
         
         mRenderer = Renderer.getInstance();
         
@@ -243,11 +248,11 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
             if (!mActivity.isExtendedTrackingActive())
             {
                 GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,
-                    false, 0, mTeapot.getVertices());
+                    false, 0, mPlane.getVertices());
                 GLES20.glVertexAttribPointer(normalHandle, 3, GLES20.GL_FLOAT,
-                    false, 0, mTeapot.getNormals());
+                    false, 0, mPlane.getNormals());
                 GLES20.glVertexAttribPointer(textureCoordHandle, 2,
-                    GLES20.GL_FLOAT, false, 0, mTeapot.getTexCoords());
+                    GLES20.GL_FLOAT, false, 0, mPlane.getTexCoords());
                 
                 GLES20.glEnableVertexAttribArray(vertexHandle);
                 GLES20.glEnableVertexAttribArray(normalHandle);
@@ -265,8 +270,8 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
                 
                 // finally draw the teapot
                 GLES20.glDrawElements(GLES20.GL_TRIANGLES,
-                    mTeapot.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT,
-                    mTeapot.getIndices());
+                        mTeapot.getNumObjectIndex(), GLES20.GL_UNSIGNED_SHORT,
+                        mTeapot.getIndices());
                 
                 // disable the enabled arrays
                 GLES20.glDisableVertexAttribArray(vertexHandle);
@@ -276,11 +281,11 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
             {
                 GLES20.glDisable(GLES20.GL_CULL_FACE);
                 GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,
-                    false, 0, mBuildingsModel.getVertices());
+                    false, 0, mPlane.getVertices());
                 GLES20.glVertexAttribPointer(normalHandle, 3, GLES20.GL_FLOAT,
-                    false, 0, mBuildingsModel.getNormals());
+                    false, 0, mPlane.getNormals());
                 GLES20.glVertexAttribPointer(textureCoordHandle, 2,
-                    GLES20.GL_FLOAT, false, 0, mBuildingsModel.getTexCoords());
+                    GLES20.GL_FLOAT, false, 0, mPlane.getTexCoords());
                 
                 GLES20.glEnableVertexAttribArray(vertexHandle);
                 GLES20.glEnableVertexAttribArray(normalHandle);
@@ -293,7 +298,7 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
                     modelViewProjection, 0);
                 GLES20.glUniform1i(texSampler2DHandle, 0);
                 GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0,
-                    mBuildingsModel.getNumObjectVertex());
+                        mPlane.getNumObjectVertex());
                 
                 SampleUtils.checkGLError("Renderer DrawBuildings");
             }
