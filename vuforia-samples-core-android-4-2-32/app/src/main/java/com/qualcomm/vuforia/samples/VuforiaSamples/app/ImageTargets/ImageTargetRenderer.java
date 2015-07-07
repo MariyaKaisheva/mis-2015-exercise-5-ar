@@ -61,16 +61,16 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
     
     private Teapot mTeapot;
     //private PlaneObject mPlane;
-    private CubeObject mPlane;
+    private PlaneObject mPlane;
     
-    private float kBuildingScale = 12.0f;
+    private float kBuildingScale = 25.0f; //change name to Plane scale
     private SampleApplication3DModel mBuildingsModel;
     
     private Renderer mRenderer;
     
     boolean mIsActive = false;
     
-    private static final float OBJECT_SCALE_FLOAT = 3.0f;
+    private static final float OBJECT_SCALE_FLOAT = 15.0f;
     
     
     public ImageTargetRenderer(ImageTargets activity,
@@ -122,7 +122,7 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
     private void initRendering()
     {
         mTeapot = new Teapot();
-        mPlane = new CubeObject();
+        mPlane = new PlaneObject();
         
         mRenderer = Renderer.getInstance();
         
@@ -234,7 +234,7 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
                     OBJECT_SCALE_FLOAT, OBJECT_SCALE_FLOAT);
             } else
             {
-                Matrix.rotateM(modelViewMatrix, 0, 90.0f, 1.0f, 0, 0);
+             //   Matrix.rotateM(modelViewMatrix, 0, 90.0f, 1.0f, 0, 0);
                 Matrix.scaleM(modelViewMatrix, 0, kBuildingScale,
                     kBuildingScale, kBuildingScale);
             }
@@ -248,11 +248,11 @@ public class ImageTargetRenderer implements GLSurfaceView.Renderer
             if (!mActivity.isExtendedTrackingActive())
             {
                 GLES20.glVertexAttribPointer(vertexHandle, 3, GLES20.GL_FLOAT,
-                    false, 0, mPlane.getVertices());
+                    false, 0, mTeapot.getVertices());
                 GLES20.glVertexAttribPointer(normalHandle, 3, GLES20.GL_FLOAT,
-                    false, 0, mPlane.getNormals());
+                    false, 0, mTeapot.getNormals());
                 GLES20.glVertexAttribPointer(textureCoordHandle, 2,
-                    GLES20.GL_FLOAT, false, 0, mPlane.getTexCoords());
+                    GLES20.GL_FLOAT, false, 0, mTeapot.getTexCoords());
                 
                 GLES20.glEnableVertexAttribArray(vertexHandle);
                 GLES20.glEnableVertexAttribArray(normalHandle);
