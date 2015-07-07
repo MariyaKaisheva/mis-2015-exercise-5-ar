@@ -40,7 +40,7 @@ public class PlaneObject extends  MeshObject{
             -15, 15, 1,
             -15, -15, 1};
 
-    private static final double PlaneTexcoords[] ={0, 0, 1, 0, 1, 1, 0, 1};
+    private static final double PlaneTexcoords[] ={0, 0, 2, 0, 2, 2, 0, 2};
 
     private static final double PlaneNormals[] ={ 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1};
 
